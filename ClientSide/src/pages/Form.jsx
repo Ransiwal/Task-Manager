@@ -1,5 +1,5 @@
 import React from 'react'
-import { useState , useRef } from 'react'
+import { useState , useEffect } from 'react'
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
@@ -12,28 +12,29 @@ export const Form = () => {
 
     const {taskid} = useParams()
 
-    if(taskid){
+      useEffect(() => {
         async function fetchData () {
           try {
-            console.log("ASDADAD")
             const { data } = await axios.get(`${url}/${taskid}`);
-            
-            console.log(data)
             setTaskData(data)
-            
           } catch (error) {
             console.log(error.message);
           }
         }
-        console.log("ASDASD")
+      
         fetchData();
       }
+        , []);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        if(taskData.title.length < 1 || taskData.description.length < 1){
+          console.log("ERROR")
+          return
+        }
         if(taskid){
           try {
-            const { data } = axios.patch(`${url}/${id}`, updatedPost);
+            const { data } = axios.patch(`${url}/${taskid}`, taskData);
       
           } catch (error) {
             console.log(error.message);
@@ -47,7 +48,7 @@ export const Form = () => {
             console.log(error.message);
           }
         }
-        setPostData({ title: '', description: ''})
+        setTaskData({ title: '', description: ''})
         
         
     }
