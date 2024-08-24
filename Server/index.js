@@ -16,6 +16,27 @@ app.use(cors());
 
 app.use('/tasks', routes);
 
+app.post('/signup' , async (req , res) => {
+  const {email , password} = req.body;
+  try{
+    
+
+  }
+  catch(err){
+    console.log(err)
+  }
+})
+
+app.post('/login' , async (req , res) => {
+  const {email , password} = req.body;
+  try{
+
+  }
+  catch(err){
+    console.log(err)
+  }
+})
+
 const CONNECTION_URL = 'mongodb+srv://ransiwalsuryansh:PKCHiUvNPL5CiEhX@cluster0.st9ygsl.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
 
 // const CONNECTION_URL = 'mongodb+srv://user1:user1234@cluster0.dxi8aa0.mongodb.net/DB?retryWrites=true&w=majority&appName=Cluster0';

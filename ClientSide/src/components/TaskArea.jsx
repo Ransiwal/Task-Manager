@@ -14,7 +14,6 @@ export const TaskArea = ({_id , title , description , status , createdAt}) => {
     })
   }))
 
-  console.log(isDragging)
 
   const url = 'http://localhost:5000/tasks';
 
