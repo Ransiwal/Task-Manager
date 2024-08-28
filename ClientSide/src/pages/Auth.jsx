@@ -1,23 +1,28 @@
-import React, { useState , useContext } from 'react'
-import { GoogleLogin , useGoogleLogin} from '@react-oauth/google';
+import React, { useState, useContext } from 'react'
+import { GoogleLogin, useGoogleLogin } from '@react-oauth/google';
 import { jwtDecode } from "jwt-decode";
 import { useNavigate } from "react-router-dom"
+import axios from 'axios'
 
 import UserContext from '../context/UserContext/UserContext';
-
+import eye from "../assets/eye.jpg"
+import closeEye from "../assets/closeEye.png"
 const initialState = {
-    firstName : '',
-    lastName : '',
-    email : '',
-    password : '',
-    confirmPassword : ''
+    firstName: '',
+    lastName: '',
+    email: '',
+    password: '',
+    confirmPassword: ''
 }
 
 
 export const Auth = () => {
+
+    const url = 'http://localhost:5000/user';
+
     const navigate = useNavigate();
 
-    const {setUser} = useContext(UserContext)
+    const { setUser } = useContext(UserContext)
     const [error, setError] = useState("")
     const [isLogIn, setIsLogIn] = useState(false)
     const [showPassord, setShowPassord] = useState(false)
@@ -35,36 +40,73 @@ export const Auth = () => {
     }
 
 
-    const handleSubmit = (e, endpoint) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         console.log(formData)
-        // if (!isLogIn && password !== confirmPassword) {
-        //     setError('Make Sure Passwords Match')
-        // }
+
+        if (!isLogIn && formData.password !== formData.confirmPassword) {
+            setError('Make Sure Passwords Match')
+            return 0
+        }
+        if (formData.email.length == 0) {
+            setError('Make sure email colloum is Filled')
+            return 0
+        }
+
+        try {
+            const { data } = await axios.post(`${url}/${!isLogIn ? "signup" : "signin"}`, formData)
+
+            if (isLogIn) {
+                localStorage.setItem('profile', JSON.stringify(data.result))
+
+                setUser(true)
+            }
+            else {
+                alert("You have succesfully signed up you can now Login")
+                setIsLogIn(true);
+            }
+            if (data.message) {
+                setError(message)
+            }
+        } catch (error) {
+            console.log(error.response.data.message);
+            // alert(error.message)
+            setError(error.response.data.message)
+        }
+
+
+        setFormData(initialState)
+        // localStorage.setItem('profile' , JSON.stringify(decoded))
     }
 
     const handleChange = (e) => {
+        console.log( e.target.value)
         setFormData(
-            {...formData,
-            [e.target.name] : e.target.value}
+            {
+                ...formData,
+                [e.target.name]: e.target.value
+            }
+        
         )
+        console.log(formData)
     }
 
-    const showUserInformation = (response) =>{
+    const showUserInformation = (response) => {
         const token = response?.credential
         const decoded = jwtDecode(token);
         console.log(decoded);
         console.log(token);
-        localStorage.setItem('profile' , JSON.stringify(decoded))
+        localStorage.setItem('profile', JSON.stringify(decoded))
         setUser((prev) => !prev)
         // window.location.reload(false);
         // localStorage.clear()
     }
 
-    const login = useGoogleLogin({
-        onSuccess: codeResponse => console.log(codeResponse),
-        flow: 'auth-code',
-      });
+    const handleShowPassword = (e) => {
+        e.preventDefault()
+        setShowPassord((prev) => !prev)
+    }
+
 
     return (
         <div className='w-1/3 max-md:w-3/4 m-auto pt-4  '>
@@ -75,51 +117,29 @@ export const Auth = () => {
 
                     {!isLogIn && (
                         <div className='flex flex-row gap-1'>
-                            <input onChange={handleChange}  name='firstName'  className='  border-gray-400 p-3 w-full border-2' type='text' placeholder='First Name'></input>
-                            <input onChange={handleChange}  name='lastName' className='  border-gray-400 p-3 w-full border-2' type='text' placeholder='Last Name'></input>
+                            <input value={formData.firstName} onChange={handleChange} name='firstName' className='  border-gray-400 p-3 w-full border-2' type='text' placeholder='First Name'></input>
+                            <input value={formData.lastName} onChange={handleChange} name='lastName' className='  border-gray-400 p-3 w-full border-2' type='text' placeholder='Last Name'></input>
                         </div>
                     )}
 
-                    <input onChange={handleChange}  name='email'  className='  border-gray-400 p-3 w-full border-2' type='text' placeholder='Email'></input>
-                    <input onChange={handleChange}  name='password'  className='border-gray-400 p-3 w-full border-2' type='password' placeholder='Password'></input>
-
-                    {!isLogIn && <input onChange={handleChange}  name='confirmPassword'  className='border-gray-400 p-3 w-full border-2' type={showPassord ? 'text' : 'password'} placeholder='ConfirmPassword'></input>}
+                    <input value={formData.email} onChange={handleChange} name='email' className='  border-gray-400 p-3 w-full border-2' type='text' placeholder='Email'></input>
+                    <div className='relative '>
+                        <input value={formData.password} onChange={handleChange} name='password' className='border-gray-400 p-3 w-full border-2' type={showPassord ? 'text' : 'password'} placeholder='Password'></input>
+                        <button onClick={handleShowPassword}> <img className='absolute w-10 right-1 top-2' src={!showPassord ? eye : closeEye}  />    </button>
+                    </div>
+                    {!isLogIn && <input value={formData.confirmPassword} onChange={handleChange} name='confirmPassword' className='border-gray-400 p-3 w-full border-2' type='password' placeholder='ConfirmPassword'></input>}
 
                     {/* <button type='submit' onClick={(e) => handleSubmit(e, isLogIn ? 'login' : 'signup')} className='mt-10 py-2 bg-blue-600 h-12 text-white w-full rounded-md'  >{isLogIn ? "LogIn" : "SignUp"}</button> */}
-                    <button type='submit'  className='mt-10 py-2 bg-blue-600 h-12 text-white w-full rounded-md'  >{isLogIn ? "LogIn" : "SignUp"}</button>
+                    <button type='submit' className='mt-10 py-2 bg-blue-600 h-12 text-white w-full rounded-md'  >{isLogIn ? "LogIn" : "SignUp"}</button>
 
 
                     <GoogleLogin
-        onSuccess={showUserInformation}
-        onError={() => {
-            console.log('Login Failed');
-        }}
-        // useOneTap
-        />
-
-        
-
-                    {/* <GoogleLogin
-                    
-                    onSuccess={credentialResponse => {
-                        console.log(credentialResponse);
-                    }}
-                    onError={() => {
-                        console.log('Login Failed');
-                    }}
-                /> */}
-
-{/* <GoogleLogin
-  onSuccess={credentialResponse => {
-    console.log(credentialResponse);
-  }}
-  onError={() => {
-    console.log('Login Failed');
-  }}
-  useOneTap
-/> */}
-
-                    {/* <button className='w-full bg-blue-600 text-white h-12 rounded-md' onClick={() => login()}>Sign in with Google</button>; */}
+                        onSuccess={showUserInformation}
+                        onError={() => {
+                            console.log('Login Failed');
+                        }}
+                    // useOneTap
+                    />
 
                     {isLogIn && <p className='mb-5 font-bold text-sm text-center text-gray-500 '>Don't Have an Account ? <button className='text-blue-600' onClick={() => viewLogin(false)}>Sign up </button></p>}
 

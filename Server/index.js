@@ -3,39 +3,37 @@ import mongoose from 'mongoose';
 import cors from 'cors';
 
 import routes from './routes/tasks.js'
+import userRouter from "./routes/user.js";
 
 const app = express();
-
-
-
-// PKCHiUvNPL5CiEhX
 
 
 app.use(express.json({limit:'50mb'}));
 app.use(cors());
 
 app.use('/tasks', routes);
+app.use("/user", userRouter);
 
-app.post('/signup' , async (req , res) => {
-  const {email , password} = req.body;
-  try{
+// app.post('/signup' , async (req , res) => {
+//   const {email , password} = req.body;
+//   try{
     
 
-  }
-  catch(err){
-    console.log(err)
-  }
-})
+//   }
+//   catch(err){
+//     console.log(err)
+//   }
+// })
 
-app.post('/login' , async (req , res) => {
-  const {email , password} = req.body;
-  try{
+// app.post('/login' , async (req , res) => {
+//   const {email , password} = req.body;
+//   try{
 
-  }
-  catch(err){
-    console.log(err)
-  }
-})
+//   }
+//   catch(err){
+//     console.log(err)
+//   }
+// })
 
 const CONNECTION_URL = 'mongodb+srv://ransiwalsuryansh:PKCHiUvNPL5CiEhX@cluster0.st9ygsl.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
 

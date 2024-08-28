@@ -22,9 +22,8 @@ const Home = () => {
   const url = 'http://localhost:5000/tasks';
 
   useEffect(() => {
-
-    if (user) {
-      async function fetchData() {
+    
+    async function fetchData() {
         try {
           const { data } = await axios.get(url);
           setData(data)
@@ -34,9 +33,9 @@ const Home = () => {
           console.log(error.message);
         }
       }
-
       fetchData();
-    }
+      console.log(user)
+    
   }
     , [data]);
 

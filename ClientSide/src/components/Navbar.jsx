@@ -12,23 +12,26 @@ const Navbar = () => {
 
   const {user , setUser} = useContext(UserContext)
 
+  
+  const [profile , setProfile] = useState(JSON.parse(localStorage.getItem('profile')))
+
   function logout() {
     
-    localStorage.clear()
-    setUser(false)
-    window.location.reload(false);
+    localStorage.clear();
+    setUser(false);
+    setProfile(JSON.parse(localStorage.getItem('profile')))
+    
+    // window.location.reload(false);
   }
 
-  const [profile , setProfile] = useState(JSON.parse(localStorage.getItem('profile')))
 
   useEffect(() => {
     setProfile(JSON.parse(localStorage.getItem('profile')))
-
+    console.log(profile)
     if(profile){
-      console.log("ASDASASD")
       setUser(true)
+      console.log("ASDASDAD")
     }
-
   }
     , [user]);
 
